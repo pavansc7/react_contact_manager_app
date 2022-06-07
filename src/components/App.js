@@ -1,25 +1,14 @@
 import Header from "./header/header";
 import UpdateContact from "./updateContact/UpdateContact"
 import ListContact from "./listContact/ListContacts"
+import DetailedContact from "./listContact/DetailedContact"
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import { uuid } from "uuidv4";
-import { BrowserRouter as Router, Switch, Route,  } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, } from "react-router-dom";
+import {getContacts,deleteContacts, addContact} from "../services/ContactServices"
 
-const contactList = [
-  {
-    name: 'ramesh',
-    number: 12345,
-    id: uuid()
-  },
-  {
-    name: 'suresh',
-    number: 988676,
-    id: uuid()
-  },
-]
-
-
+const contactList = []
 
 function App() {
 
@@ -27,38 +16,63 @@ function App() {
   //const [contacts, updateContacts] = useState(JSON.parse(localStorage.getItem('contacts')))
   const [contacts, updateContacts] = useState(contactList)
 
-  const updateList = (newname, phoneNumber) => {
-    console.log('Updating state')
-    updateContacts([...contacts, { name: newname, number: Number(phoneNumber), id: uuid() }])
+  //Component did Mount
+  useEffect(() => {
+    //const newList = 
+    getContacts().then(newList=> {
+    newList && updateContacts(newList)});
+  },[])
+
+  //Store into local storage:
+  // useEffect(() => {
+  //   localStorage.setItem('contacts', JSON.stringify(contacts))
+  // }, [contacts])
+
+  //Add into DB
+  const updateContactDatabase = (newname, phoneNumber) => {
+    const contact = { name: newname, number: phoneNumber, id: uuid() }
+    addContact(contact)
+    .then(
+      getContacts().then(newList=> {
+        console.log('newList: '+newList);
+        newList && updateContacts(newList)})
+    )
+    .catch();
   }
-
-  useEffect(() => {
-    const newList = JSON.parse(localStorage.getItem('contacts'));
-    console.log(JSON.parse(localStorage.getItem('contacts')));
-    newList && updateContacts(newList);
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts))
-  }, [contacts])
-
 
 
   const deleteContactHandler = (id) => {
     console.log('deleting contact: ' + id)
-    const newarray = contacts.filter(val => val.id !== id)
-    updateContacts(newarray);
+    //const newarray = contacts.filter(val => val.id !== id)
+    deleteContacts(id).then(
+      getContacts().then(newList=> {
+        console.log('newList: '+newList);
+        newList && updateContacts(newList)}
+    ));
+    //updateContacts(newarray);
   }
+
 
   return (
     <div className="ui container">
+      {/* <DetailedContact contact={contact}/> */}
+      {/* <Header /> */}
       <Router>
-      <Route path='/' component={Header} />
+        <Route path='/' component={Header} />
         <Switch>
-          <Route path="/add" component={() => <UpdateContact  updateList={updateList} />}></Route>
-          <Route path="/" component={() => <ListContact contactList={contacts} deleteContactHandler={deleteContactHandler} />}></Route>
+          <Route path="/add" render={(props) =>
+            <UpdateContact {...props}
+              updateList={updateContactDatabase} />}>
+          </Route>
+          <Route exact path="/" render={(props) =>
+            <ListContact {...props} contactList={contacts}
+              deleteContactHandler={deleteContactHandler} />}>
+          </Route>
+          <Route path="/detail/:id" render={(props) =>
+            <DetailedContact {...props}/>}>
+          </Route>
         </Switch>
-          {/* <Route path='/' component={<Header />} />
+        {/* <Route path='/' component={<Header />} />
           <Route path="/" component={<UpdateContact updateList={updateList} />}></Route>
           <Route path="/list" component={<ListContact contactList={contacts} deleteContactHandler={deleteContactHandler} />}></Route> */}
       </Router>

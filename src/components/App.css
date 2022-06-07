@@ -29,3 +29,8 @@
     cursor: pointer;
   }
 
+  .center-div {
+    align-items: center;
+    margin-left:40%
+  }
+

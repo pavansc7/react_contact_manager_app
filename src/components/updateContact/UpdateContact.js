@@ -1,13 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
 class UpdateContact extends React.Component {
 
     constructor(props) {
         super(props);
-
+        console.log('setting add contact')
         this.state = {
             name:'',
-            number:''
+            number:'',
+            success:false
         }
     }
 
@@ -23,6 +25,13 @@ class UpdateContact extends React.Component {
         })
     }    
 
+    // componentDidMount() {
+    //     this.setState({
+    //         ...this.state,
+    //         success:false
+    //     })
+    // }
+
     submitForm = (event) => {
         event.preventDefault();
         console.log('Form has been submitted: '+this.state.name + ' '+this.state.number);
@@ -31,15 +40,18 @@ class UpdateContact extends React.Component {
         //clear Fields
         this.setState ({
             name:'',
-            number:''
+            number:'',
+            success:true
         })
+
+        this.props.history.push("/")
     }
 
     render() {
         return (
             <div>
                 <div className="ui main large text" id="">
-                    
+                    {this.state.success && <label> Form submitted successfully </label>}
                     <form className="ui form" style={{fontSize:"20px"}}  onSubmit={this.submitForm}>
                         <div className="field">
                             <label>Name</label>

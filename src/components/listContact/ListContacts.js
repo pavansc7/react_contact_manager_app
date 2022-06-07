@@ -9,10 +9,14 @@ class ListContact extends React.Component {
             return (
                 <div className="item" key={index.id}>
                     <img className="ui avatar image" src={user} alt="user" />
+                    
                     <div className="content">
+                    <Link to={{ pathname:`/detail/${index.id}`, state:{contact:index}}}>
                         <div className="header">{index.name} </div>
                         <div>{index.number}</div>
+                    </Link>
                     </div>
+                  
                     <i className="trash alternate outline icon" onClick={() => this.props.deleteContactHandler(index.id)}></i>
                 </div>
             )
@@ -21,7 +25,7 @@ class ListContact extends React.Component {
 
     render() {
         return (
-            <div class="main">
+            <div className="main">
                 <h1>Contact list
                 <Link to="/add"><button className="ui right floated primary button">Add contact</button></Link>
                 </h1>   

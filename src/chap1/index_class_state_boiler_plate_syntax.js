@@ -45,7 +45,7 @@ class Details extends Component{
     }
 
 
-    updateisEnabled  = () => {
+        updateisEnabled  = () => {
         
         /* Directly if you want to change variable*/
         // this.setState(
